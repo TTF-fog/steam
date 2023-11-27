@@ -1,5 +1,5 @@
 import tkinter
-
+import os
 import matplotlib
 import tkinter as tk
 from waitress import serve
@@ -12,11 +12,11 @@ def hello():
     return 'Hello, World!'
 @app.route('/data', methods=['POST'])
 def handle_post():
-    data = request.get_json()  # get data sent in the POST request
-    print(data)  # print the data to console
+    data =(request.json) # get data sent in the POST request
+    print(data['test'])
+    os.exit()# print the data to console
     return 'Success', 200
 app.run(host="0.0.0.0")
-
 
 matplotlib.use('TkAgg')
 # from matplotlib import style
