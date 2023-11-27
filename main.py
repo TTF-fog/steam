@@ -3,17 +3,20 @@ import tkinter
 import matplotlib
 import tkinter as tk
 from waitress import serve
+from flask import *
+app = Flask(__name__)
 
 
-def app(environ, start_response):
-    data = b"Hello, World!\n"
-    start_response("200 OK", [
-        ("Content-Type", "text/plain"),
-        ("Content-Length", str(len(data)))
-    ])
-    return iter([data])
+@app.route('/')
+def hello():
+    return 'Hello, World!'
+@app.route('/data', methods=['POST'])
+def handle_post():
+    data = request.get_json()  # get data sent in the POST request
+    print(data)  # print the data to console
+    return 'Success', 200
+app.run(host="0.0.0.0")
 
-serve(app, host='0.0.0.0', port=8080)
 
 matplotlib.use('TkAgg')
 # from matplotlib import style
@@ -31,6 +34,8 @@ def app(environ, start_response):
         ("Content-Length", str(len(data)))
     ])
     return iter([data])
+
+
 class GraphPage(tk.Frame):
 
     def __init__(self, parent, period):
@@ -64,21 +69,21 @@ class App(tkinter.Tk):
 
         self.button = customtkinter.CTkButton(self, text="Generate Report", command=self.button_callbck)
         self.button.pack(padx=20, pady=20)
-        self.period="1 Week"
-
-
+        self.period = "1 Week"
 
         combobox = customtkinter.CTkComboBox(self, values=["1 Day", "1 Week"],
                                              command=self.combobox_callback)
         combobox.set("1 Week")
-        combobox.pack(padx=20,pady=25)
-    def combobox_callback(self,choice):
-        self.period=choice
+        combobox.pack(padx=20, pady=25)
+
+    def combobox_callback(self, choice):
+        self.period = choice
+
     def button_callbck(self):
         fig = MPLGraph()
 
         root = tk.Tk()
-        graph_page = GraphPage(root,self.period)
+        graph_page = GraphPage(root, self.period)
         graph_page.add_mpl_figure(fig)
 
         root.mainloop()
@@ -86,6 +91,3 @@ class App(tkinter.Tk):
 
 app = App()
 app.mainloop()
-
-
-
